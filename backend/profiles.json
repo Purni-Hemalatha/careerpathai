@@ -1,0 +1,21 @@
+{
+    "hema": {
+        "headline": "Aspiring Professional",
+        "location": "India",
+        "university": "Not specified",
+        "about": "I am a passionate professional looking to explore new career opportunities and grow my skill set.",
+        "selectedField": "engineering",
+        "targetRole": "Software Engineer",
+        "topSkills": [
+            "Node.js",
+            "React",
+            "JavaScript",
+            "Python"
+        ],
+        "experience": [],
+        "achievements": [],
+        "education": [],
+        "certifications": [],
+        "projects": []
+    }
+}
