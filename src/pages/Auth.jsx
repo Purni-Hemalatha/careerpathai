@@ -22,7 +22,7 @@ const Auth = () => {
     }
 
     if (result.success) {
-      navigate('/explore');
+      navigate('/onboarding');
       // Force reload to update navbar global state gracefully without complex context bounds
       window.location.reload(); 
     }

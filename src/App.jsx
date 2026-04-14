@@ -8,6 +8,7 @@ import CareerDetail from './pages/CareerDetail';
 import CareerRoadmap from './pages/CareerRoadmap';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
+import OnboardingFlow from './onboarding/OnboardingFlow';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/roadmap/:id" element={user ? <CareerRoadmap /> : <Navigate to="/login" />} />
             
             <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+            <Route path="/onboarding" element={user ? <OnboardingFlow /> : <Navigate to="/login" />} />
           </Routes>
         </div>
       </main>

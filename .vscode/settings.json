@@ -1,0 +1,12 @@
+{
+  "css.customData": [],
+  "css.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "javascript": "javascript",
+    "html": "html"
+  },
+  "python.defaultInterpreterPath": "C:\\Users\\purni\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+  "python.analysis.extraPaths": [
+    "C:\\Users\\purni\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages"
+  ]
+}

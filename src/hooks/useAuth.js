@@ -1,15 +1,6 @@
 import { useState } from 'react';
 
-// All users stored as JSON array in localStorage
-const USERS_KEY = 'careerpath_users';
-
-const getUsers = () => {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
-  catch { return []; }
-};
-
-const saveUsers = (users) =>
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+const API_BASE_URL = 'http://localhost:5050/api';
 
 export function useAuth() {
   const [loading, setLoading] = useState(false);
@@ -23,21 +14,14 @@ export function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      if (!username || !email || !password)
-        throw new Error('All fields are required');
+      const response = await fetch(`${API_BASE_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
 
-      const users = getUsers();
-      if (users.find(u => u.username === username))
-        throw new Error('Username already exists');
-
-      const newUser = {
-        id: Date.now(),
-        username,
-        email,
-        password,
-        created_at: new Date().toISOString()
-      };
-      saveUsers([...users, newUser]);
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'Registration failed');
 
       const loggedUser = { username, email };
       setUser(loggedUser);
@@ -55,13 +39,16 @@ export function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      const users = getUsers();
-      const found = users.find(
-        u => u.username === username && u.password === password
-      );
-      if (!found) throw new Error('Invalid credentials');
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
 
-      const loggedUser = { username: found.username, email: found.email };
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'Login failed');
+
+      const loggedUser = result.user;
       setUser(loggedUser);
       localStorage.setItem('careerpath_user', JSON.stringify(loggedUser));
       return { success: true };

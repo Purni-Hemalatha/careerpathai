@@ -3,7 +3,7 @@ import { Mail, MapPin, Building2, Briefcase, GraduationCap, Link as LinkIcon, Ed
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
-const PROFILES_KEY = 'careerpath_profiles';
+const API_BASE_URL = 'http://localhost:5050/api';
 
 const Modal = ({ title, isOpen, onClose, onSave, saving, children }) => {
   if (!isOpen) return null;
@@ -78,27 +78,48 @@ const Profile = () => {
 
   useEffect(() => {
     if (user?.username) {
-      try {
-        const all = JSON.parse(localStorage.getItem(PROFILES_KEY) || '{}');
-        if (all[user.username]) setProfileData(all[user.username]);
-      } catch (err) { console.error(err); } finally { setLoading(false); }
+      const fetchProfile = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/profile/${user.username}`);
+          const result = await response.json();
+          if (result.success && result.profile) {
+            setProfileData(prev => ({ ...prev, ...result.profile }));
+          }
+        } catch (err) {
+          console.error('Failed to fetch profile:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchProfile();
     }
   }, [user]);
 
   const openModal = (type) => { setEditBuffer({...profileData}); setModals({...modals, [type]: true}); };
   const closeModal = (type) => { setModals({...modals, [type]: false}); setExpForm({role:'', company:'', duration:'', desc:''}); };
 
-  const handleSave = (type) => {
+  const handleSave = async (type) => {
     setSaving(true);
     try {
-      const all = JSON.parse(localStorage.getItem(PROFILES_KEY) || '{}');
-      all[user.username] = editBuffer;
-      localStorage.setItem(PROFILES_KEY, JSON.stringify(all));
-      setProfileData(editBuffer);
-      closeModal(type);
-      setSaveMessage('Profile saved successfully!');
-      setTimeout(() => setSaveMessage(''), 3000);
-    } catch (err) { console.error(err); } finally { setSaving(false); }
+      const response = await fetch(`${API_BASE_URL}/profile/${user.username}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editBuffer),
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        setProfileData(editBuffer);
+        closeModal(type);
+        setSaveMessage('Profile saved successfully!');
+        setTimeout(() => setSaveMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to save profile:', err);
+      setSaveMessage('Error saving profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addSkill = (e) => {
