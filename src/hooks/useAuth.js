@@ -10,7 +10,8 @@ export function useAuth() {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const isLocal = window.location.hostname === 'localhost';
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  console.log(`[CareerPath] Environment: ${isLocal ? 'DEVELOPMENT (Local Backend)' : 'PRODUCTION (Netlify Mock)'}`);
 
   const register = async (username, email, password) => {
     setLoading(true);
