@@ -1,4 +1,4 @@
-const OPENROUTER_API_KEY = process.env.VITE_OPENROUTER_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 const MODELS = [

@@ -16,7 +16,7 @@ app.use(express.json());
 const USERS_FILE = path.join(__dirname, 'data', 'users.json');
 const PROFILES_FILE = path.join(__dirname, 'data', 'profiles.json');
 
-const OPENROUTER_API_KEY = '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';
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // Verified working models
