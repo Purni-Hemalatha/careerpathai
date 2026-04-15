@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
 const API_BASE_URL = 'http://localhost:5050/api';
-const isLocal = window.location.hostname === 'localhost';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 const Modal = ({ title, isOpen, onClose, onSave, saving, children }) => {
   if (!isOpen) return null;
