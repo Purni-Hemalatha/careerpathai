@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
 const API_BASE_URL = 'http://localhost:5050/api';
+const isLocal = window.location.hostname === 'localhost';
 
 const Modal = ({ title, isOpen, onClose, onSave, saving, children }) => {
   if (!isOpen) return null;
@@ -80,10 +81,16 @@ const Profile = () => {
     if (user?.username) {
       const fetchProfile = async () => {
         try {
-          const response = await fetch(`${API_BASE_URL}/profile/${user.username}`);
-          const result = await response.json();
-          if (result.success && result.profile) {
-            setProfileData(prev => ({ ...prev, ...result.profile }));
+          if (!isLocal) {
+            const profiles = JSON.parse(localStorage.getItem('mock_db_profiles') || '{}');
+            const profile = profiles[user.username] || {};
+            setProfileData(prev => ({ ...prev, ...profile }));
+          } else {
+            const response = await fetch(`${API_BASE_URL}/profile/${user.username}`);
+            const result = await response.json();
+            if (result.success && result.profile) {
+              setProfileData(prev => ({ ...prev, ...result.profile }));
+            }
           }
         } catch (err) {
           console.error('Failed to fetch profile:', err);
@@ -101,19 +108,25 @@ const Profile = () => {
   const handleSave = async (type) => {
     setSaving(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/profile/${user.username}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editBuffer),
-      });
-      
-      const result = await response.json();
-      if (result.success) {
-        setProfileData(editBuffer);
-        closeModal(type);
-        setSaveMessage('Profile saved successfully!');
-        setTimeout(() => setSaveMessage(''), 3000);
+      if (!isLocal) {
+        await new Promise(r => setTimeout(r, 400));
+        const profiles = JSON.parse(localStorage.getItem('mock_db_profiles') || '{}');
+        profiles[user.username] = editBuffer;
+        localStorage.setItem('mock_db_profiles', JSON.stringify(profiles));
+      } else {
+        const response = await fetch(`${API_BASE_URL}/profile/${user.username}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editBuffer),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error('Save failed');
       }
+
+      setProfileData(editBuffer);
+      closeModal(type);
+      setSaveMessage('Profile saved successfully!');
+      setTimeout(() => setSaveMessage(''), 3000);
     } catch (err) {
       console.error('Failed to save profile:', err);
       setSaveMessage('Error saving profile');
